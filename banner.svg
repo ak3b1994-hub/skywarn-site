@@ -1,0 +1,233 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 500" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Storm over Baltimore region landmarks">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#070b12"/>
+      <stop offset="0.45" stop-color="#131c28"/>
+      <stop offset="0.78" stop-color="#2a2a2c"/>
+      <stop offset="0.92" stop-color="#5a3420"/>
+      <stop offset="1" stop-color="#8a4a22"/>
+    </linearGradient>
+    <linearGradient id="cloudTop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a4656"/>
+      <stop offset="0.6" stop-color="#1d2531"/>
+      <stop offset="1" stop-color="#0f141c"/>
+    </linearGradient>
+    <linearGradient id="cloudBase" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a212b"/>
+      <stop offset="1" stop-color="#0b0f15"/>
+    </linearGradient>
+    <linearGradient id="rain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5d6b7c" stop-opacity="0"/>
+      <stop offset="0.12" stop-color="#5d6b7c" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#5d6b7c" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b2a20"/>
+      <stop offset="1" stop-color="#0b0f15"/>
+    </linearGradient>
+    <radialGradient id="flash" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffd2ad" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#E8631C" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+    <filter id="softer" x="-20%" y="-60%" width="140%" height="220%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <filter id="rainblur"><feGaussianBlur stdDeviation="6"/></filter>
+    <radialGradient id="billow" cx="0.4" cy="0.3" r="0.7">
+      <stop offset="0" stop-color="#4a5566"/>
+      <stop offset="0.55" stop-color="#252e3b"/>
+      <stop offset="1" stop-color="#121821"/>
+    </radialGradient>
+    <radialGradient id="billowLit" cx="0.6" cy="0.7" r="0.7">
+      <stop offset="0" stop-color="#7a5a48"/>
+      <stop offset="0.5" stop-color="#2e3440"/>
+      <stop offset="1" stop-color="#141a23"/>
+    </radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1600" height="500" fill="url(#sky)"/>
+
+  <!-- Distant lightning flash behind the storm -->
+  <ellipse cx="1180" cy="200" rx="360" ry="200" fill="url(#flash)"/>
+
+  <!-- Anvil -->
+  <g filter="url(#softer)">
+    <ellipse cx="1080" cy="62" rx="560" ry="46" fill="#2a3442" opacity="0.95"/>
+    <ellipse cx="760" cy="80" rx="300" ry="26" fill="#222b37" opacity="0.8"/>
+  </g>
+  <!-- Supercell tower + storm deck -->
+  <g filter="url(#soft)">
+    <circle cx="960" cy="170" r="70" fill="url(#billow)"/><circle cx="1030" cy="130" r="85" fill="url(#billow)"/><circle cx="1110" cy="110" r="95" fill="url(#billow)"/><circle cx="1200" cy="120" r="90" fill="url(#billow)"/><circle cx="1290" cy="150" r="80" fill="url(#billow)"/><circle cx="1360" cy="185" r="70" fill="url(#billow)"/><circle cx="1000" cy="215" r="60" fill="url(#billowLit)"/><circle cx="1090" cy="210" r="70" fill="url(#billowLit)"/><circle cx="1180" cy="215" r="75" fill="url(#billowLit)"/><circle cx="1270" cy="215" r="70" fill="url(#billowLit)"/><circle cx="1350" cy="225" r="60" fill="url(#billow)"/><circle cx="1430" cy="215" r="55" fill="url(#billow)"/><circle cx="1500" cy="225" r="50" fill="url(#billow)"/><circle cx="-20" cy="20" r="90" fill="url(#billow)" opacity="0.85"/><circle cx="80" cy="0" r="80" fill="url(#billow)" opacity="0.85"/><circle cx="180" cy="-10" r="70" fill="url(#billow)" opacity="0.85"/><circle cx="1500" cy="10" r="110" fill="url(#billow)" opacity="0.85"/><circle cx="1600" cy="40" r="100" fill="url(#billow)" opacity="0.85"/><circle cx="330" cy="-30" r="70" fill="url(#billow)" opacity="0.85"/><circle cx="620" cy="-40" r="60" fill="url(#billow)" opacity="0.85"/>
+  </g>
+  <!-- Rain-free base and wall cloud -->
+  <g filter="url(#soft)">
+    <path d="M870 230 C1000 214 1200 210 1400 220 C1500 226 1580 232 1640 236 L1640 284 C1480 280 1300 278 1120 282 C1000 284 900 278 850 266 Z" fill="#0a0e14"/>
+    <path d="M1140 272 C1160 302 1186 322 1222 324 C1260 324 1282 302 1298 274 Z" fill="#080b10"/>
+  </g>
+  <!-- Shelf cloud edge reaching under the title -->
+  <g filter="url(#soft)" opacity="0.75">
+    <path d="M260 296 C420 276 600 270 760 276 C820 278 860 286 880 296 L880 314 C700 306 500 308 300 318 Z" fill="#161d27"/>
+  </g>
+  <!-- Rain shafts -->
+  <g filter="url(#rainblur)">
+    <path d="M1370 262 L1560 262 L1520 470 L1290 470 Z" fill="url(#rain)"/>
+    <path d="M890 262 L980 262 L950 470 L845 470 Z" fill="url(#rain)" opacity="0.6"/>
+  </g>
+  <g stroke="#7d8a9a" stroke-opacity="0.25" stroke-width="1.2">
+    <line x1="1380" y1="290" x2="1350" y2="440"/><line x1="1410" y1="290" x2="1380" y2="450"/>
+    <line x1="1440" y1="290" x2="1410" y2="440"/><line x1="1470" y1="290" x2="1440" y2="455"/>
+    <line x1="1500" y1="290" x2="1470" y2="440"/><line x1="1530" y1="290" x2="1500" y2="450"/>
+  </g>
+
+  <!-- Lightning -->
+  <g filter="url(#glow)" fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M1230 276 L1214 318 L1236 330 L1206 380 L1226 388 L1196 446" stroke="#ffe7d2" stroke-width="3.5"/>
+    <path d="M1236 330 L1262 352 L1254 372" stroke="#ffd2ad" stroke-width="1.8"/>
+    <path d="M1206 380 L1180 398" stroke="#ffd2ad" stroke-width="1.5"/>
+  </g>
+  <g filter="url(#glow)" fill="none" stroke-linejoin="round">
+    <path d="M1420 238 L1446 262 L1436 272 L1466 300" stroke="#ffc49a" stroke-width="1.6" opacity="0.7"/>
+  </g>
+
+  <!-- Distant rolling hills -->
+  <path d="M0 420 C120 395 240 400 360 412 C480 424 600 398 740 404 C900 410 1040 392 1200 400 C1360 408 1480 396 1600 404 L1600 500 L0 500 Z" fill="#121820"/>
+
+  <!-- Faint distant city backdrop (Baltimore City) -->
+  <g fill="#10161e">
+    <rect x="905" y="372" width="24" height="88"/><rect x="930" y="352" width="18" height="108"/>
+    <rect x="985" y="330" width="30" height="130"/><rect x="1090" y="360" width="26" height="100"/>
+    <rect x="1000" y="388" width="22" height="72"/><rect x="1092" y="340" width="14" height="22"/>
+  </g>
+
+  <!-- ===== Foreground silhouettes ===== -->
+  <g fill="#05080c">
+
+    <!-- CARROLL: Union Mills Homestead mill + waterwheel -->
+    <rect x="98" y="318" width="140" height="142"/>
+    <polygon points="90,320 168,268 246,320"/>
+    <rect x="200" y="272" width="12" height="30"/>
+    <rect x="60" y="440" width="70" height="20"/>
+    <!-- CARROLL: Sykesville station -->
+    <rect x="300" y="378" width="140" height="82"/>
+    <polygon points="288,380 326,334 414,334 452,380"/>
+    <rect x="352" y="312" width="32" height="30"/>
+    <polygon points="346,314 368,272 390,314"/>
+    <rect x="410" y="326" width="9" height="18"/>
+    <rect x="276" y="400" width="188" height="6"/>
+    <rect x="280" y="404" width="4" height="56"/><rect x="456" y="404" width="4" height="56"/>
+
+    <!-- trees -->
+    <path d="M250 460 L262 420 L256 420 L268 392 L262 392 L274 366 L286 392 L280 392 L292 420 L286 420 L298 460 Z"/>
+    <path d="M462 460 L474 424 L468 424 L480 398 L492 424 L486 424 L498 460 Z"/>
+
+    <!-- BALTIMORE COUNTY: Loch Raven Dam -->
+    <path d="M500 416 Q610 404 720 416 L720 460 L500 460 Z"/>
+    <g>
+      <rect x="512" y="400" width="7" height="16"/><rect x="536" y="398" width="7" height="16"/>
+      <rect x="560" y="396" width="7" height="16"/><rect x="584" y="395" width="7" height="16"/>
+      <rect x="608" y="394" width="7" height="16"/><rect x="632" y="395" width="7" height="16"/>
+      <rect x="656" y="396" width="7" height="16"/><rect x="680" y="398" width="7" height="16"/>
+    </g>
+    <rect x="502" y="398" width="196" height="5"/>
+    <rect x="698" y="378" width="30" height="40"/>
+    <polygon points="694,380 713,364 732,380"/>
+
+    <!-- BALTIMORE COUNTY: Towson courthouse -->
+    <rect x="752" y="392" width="140" height="68"/>
+    <polygon points="770,394 822,368 874,394"/>
+    <rect x="804" y="340" width="36" height="30"/>
+    <path d="M800 342 A22 22 0 0 1 844 342 Z"/>
+    <rect x="818" y="306" width="8" height="16"/>
+    <polygon points="815,308 822,296 829,308"/>
+    <rect x="821" y="280" width="2" height="18"/>
+
+    <!-- BALTIMORE CITY: Washington Monument (Mount Vernon) -->
+    <rect x="944" y="428" width="40" height="32"/>
+    <rect x="950" y="420" width="28" height="10"/>
+    <rect x="957" y="276" width="14" height="146"/>
+    <rect x="952" y="268" width="24" height="9"/>
+    <rect x="958" y="252" width="12" height="17"/>
+    <circle cx="964" cy="247" r="5"/>
+
+    <!-- BALTIMORE CITY: Bromo-Seltzer Tower -->
+    <rect x="1036" y="236" width="44" height="224"/>
+    <rect x="1030" y="196" width="56" height="42"/>
+    <rect x="1030" y="190" width="8" height="8"/><rect x="1044" y="190" width="8" height="8"/>
+    <rect x="1064" y="190" width="8" height="8"/><rect x="1078" y="190" width="8" height="8"/>
+    <rect x="1044" y="164" width="28" height="28"/>
+    <polygon points="1040,166 1058,122 1076,166"/>
+    <rect x="1057" y="104" width="2" height="20"/>
+
+    <!-- HOWARD: Ellicott City railroad bridge over Main Street -->
+    <rect x="1130" y="388" width="44" height="72"/>
+    <rect x="1316" y="388" width="44" height="72"/>
+    <rect x="1126" y="372" width="238" height="18"/>
+    <!-- train crossing -->
+    <rect x="1150" y="344" width="64" height="28" rx="3"/>
+    <rect x="1156" y="334" width="22" height="12"/>
+    <rect x="1218" y="350" width="56" height="22" rx="2"/>
+    <rect x="1278" y="350" width="56" height="22" rx="2"/>
+    <!-- Main Street buildings climbing the hill -->
+    <rect x="1178" y="420" width="26" height="40"/><polygon points="1176,422 1191,408 1206,422"/>
+    <rect x="1208" y="412" width="30" height="48"/>
+    <rect x="1242" y="424" width="24" height="36"/><polygon points="1240,426 1254,412 1268,426"/>
+    <rect x="1270" y="416" width="42" height="44"/>
+
+    <!-- HOWARD: Ellicott City B&O station -->
+    <rect x="1392" y="384" width="140" height="76"/>
+    <polygon points="1380,386 1412,354 1512,354 1544,386"/>
+    <rect x="1450" y="330" width="24" height="26"/>
+    <polygon points="1446,332 1462,312 1478,332"/>
+    <rect x="1500" y="342" width="9" height="16"/>
+
+    <!-- foreground ground -->
+    <rect x="0" y="458" width="1600" height="42"/>
+  </g>
+
+  <!-- Loch Raven water -->
+  <rect x="500" y="452" width="220" height="8" fill="url(#water)"/>
+  <g stroke="#c8a58a" stroke-opacity="0.35" stroke-width="1">
+    <line x1="520" y1="418" x2="520" y2="452"/><line x1="580" y1="414" x2="580" y2="452"/>
+    <line x1="640" y1="414" x2="640" y2="452"/><line x1="690" y1="418" x2="690" y2="452"/>
+  </g>
+
+  <!-- Lit windows / clock faces -->
+  <g fill="#E8631C">
+    <rect x="114" y="340" width="10" height="14" opacity="0.8"/><rect x="146" y="340" width="10" height="14" opacity="0.45"/>
+    <rect x="178" y="340" width="10" height="14" opacity="0.8"/><rect x="210" y="340" width="10" height="14" opacity="0.45"/>
+    <rect x="114" y="376" width="10" height="14" opacity="0.45"/><rect x="178" y="376" width="10" height="14" opacity="0.8"/>
+    <rect x="320" y="398" width="9" height="13" opacity="0.7"/><rect x="410" y="398" width="9" height="13" opacity="0.7"/>
+    <rect x="364" y="322" width="8" height="10" opacity="0.6"/>
+    <rect x="1186" y="434" width="8" height="10" opacity="0.7"/><rect x="1218" y="424" width="8" height="10" opacity="0.5"/>
+    <rect x="1284" y="428" width="8" height="10" opacity="0.7"/><rect x="1418" y="402" width="9" height="13" opacity="0.7"/>
+    <rect x="1500" y="402" width="9" height="13" opacity="0.7"/>
+  </g>
+  <circle cx="1058" cy="217" r="12" fill="#ffcf9e" opacity="0.9"/>
+  <circle cx="1058" cy="217" r="12" fill="none" stroke="#05080c" stroke-width="2"/>
+  <line x1="1058" y1="217" x2="1058" y2="209" stroke="#05080c" stroke-width="2"/>
+  <line x1="1058" y1="217" x2="1064" y2="219" stroke="#05080c" stroke-width="2"/>
+  <!-- waterwheel -->
+  <g stroke="#05080c" stroke-width="5" fill="none">
+    <circle cx="80" cy="412" r="38"/>
+    <line x1="80" y1="374" x2="80" y2="450"/><line x1="42" y1="412" x2="118" y2="412"/>
+    <line x1="53" y1="385" x2="107" y2="439"/><line x1="107" y1="385" x2="53" y2="439"/>
+  </g>
+  <!-- bridge sign -->
+  <text x="1245" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#E8631C" opacity="0.85">ELLICOTT CITY</text>
+
+  <!-- County labels -->
+  <g font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="3" fill="#9aa4af" text-anchor="middle" opacity="0.85">
+    <text x="275" y="484">CARROLL COUNTY</text>
+    <text x="700" y="484">BALTIMORE COUNTY</text>
+    <text x="1010" y="484">BALTIMORE CITY</text>
+    <text x="1335" y="484">HOWARD COUNTY</text>
+  </g>
+</svg>
