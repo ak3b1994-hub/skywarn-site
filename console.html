@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Baltimore Skywarn Console</title>
 <meta name="description" content="Live net-control log for Baltimore Region Skywarn activations — quick check-ins, NWS-criteria flagging, and export for the after-action log.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -156,7 +161,15 @@
     align-items: start;
   }
   @media (max-width: 860px) {
-    .layout { grid-template-columns: 1fr; }
+    .layout { grid-template-columns: minmax(0, 1fr); }
+  }
+  .layout > *, .main, .sidebar { min-width: 0; }
+  @media (max-width: 600px) {
+    .entry-grid > div { flex: 1 1 140px; }
+    #ef-time, #ef-call, #ef-county, #ef-type, #ef-detail { width: 100%; }
+    #ef-remarks { flex: 1 1 100%; }
+    .stat { min-width: calc(50% - 5px); }
+    .toolbar { flex-wrap: wrap; }
   }
   .panel {
     background: var(--surface);
@@ -418,8 +431,14 @@
     .layout { grid-template-columns: 1fr; }
     .relay-select { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
+  .home-link { display:inline-block; margin:0 0 10px; font-size:14px; font-weight:600; color:var(--accent); text-decoration:none; }
+  .home-link:hover { text-decoration:underline; }
+  @media print { .home-link { display:none; } }
 </style>
 
+</head>
+<body>
+<a class="home-link" href="index.html">&larr; Baltimore Region Skywarn Home</a>
 <div class="topbar">
   <div class="topbar-head">
     <div class="brand">
@@ -961,15 +980,17 @@
     var csv = headerBlock().split("\n").map(function (l) { return l ? '"' + l.replace(/"/g, '""') + '"' : ""; }).join("\r\n")
       + "\r\n" + toCSV(buildRows());
     var filename = "Skywarn-Net-Log-" + (els.date.value || todayStr()) + ".csv";
-    claude.use("downloads").then(function (downloads) {
-      if (!downloads) { showToast("Downloads unavailable here"); return; }
-      downloads.save({ filename: filename, data: csv }).then(function () {
-        showToast("Saved " + filename);
-      }).catch(function (err) {
-        if (err && err.code === "declined") return;
-        showToast("Save failed — try again");
-      });
-    });
+    try {
+      var blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      showToast("Saved " + filename);
+    } catch (e) {
+      showToast("Save failed — try again");
+    }
   });
 
   els.printBtn.addEventListener("click", function () { window.print(); });
@@ -989,10 +1010,8 @@
     setInterval(tickClock, 1000);
   }
 
-  if (window.claude && window.claude.hot && window.claude.hot.ready) {
-    window.claude.hot.ready(start);
-  } else {
-    start();
-  }
+  start();
 })();
 </script>
+</body>
+</html>
