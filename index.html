@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baltimore Region Skywarn</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #151b23;
+    --border: #2a323c;
+    --text: #e8ebee;
+    --muted: #9aa4af;
+    --accent: #E8631C;
+    --accent2: #ffb98a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    line-height: 1.5;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 28px 24px;
+    border-bottom: 1px solid var(--border);
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  header img { height: 64px; width: 64px; border-radius: 10px; }
+  header h1 { margin: 0; font-size: 1.6rem; }
+  header .sub { color: var(--accent2); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  main { max-width: 960px; margin: 0 auto; padding: 24px; }
+  .lead {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 28px;
+    max-width: 640px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .card {
+    display: block;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.15s ease;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card .tag {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .card h3 { margin: 0 0 6px 0; font-size: 1.1rem; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  section.info {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+  section.info h2 {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--accent2);
+  }
+  table.repeaters { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  table.repeaters th { text-align: left; color: var(--muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  table.repeaters td { padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  table.repeaters td.freq { font-family: 'Courier New', monospace; }
+  .pending { color: #f0a94e; font-size: 0.8rem; }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent2); }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="Baltimore Region Skywarn logo">
+  <div>
+    <h1>Baltimore Region Skywarn</h1>
+    <div class="sub">Baltimore &middot; Carroll &middot; Howard Counties</div>
+  </div>
+</header>
+
+<main>
+
+  <p class="lead">Tools, reference docs, and net scripts for Skywarn net control operators and spotters across the Baltimore region. Bookmark this page — it's the one-stop link for everything you need during an activation.</p>
+
+  <div class="grid">
+    <a class="card" href="console.html">
+      <span class="tag">Live Tool</span>
+      <h3>Baltimore Skywarn Console</h3>
+      <p>Run your net check-in and report log right in the browser — no install, no login.</p>
+    </a>
+    <a class="card" href="quick-guide.pdf">
+      <span class="tag">PDF</span>
+      <h3>Console Quick Guide</h3>
+      <p>One-page reference for running the console during a net.</p>
+    </a>
+    <a class="card" href="scripts/spring-summer-net-script.pdf">
+      <span class="tag">PDF</span>
+      <h3>Spring / Summer Net Script</h3>
+      <p>Current repeater reference plus the full NWS net script.</p>
+    </a>
+    <a class="card" href="scripts/closing-net-script.pdf">
+      <span class="tag">PDF</span>
+      <h3>Closing Net Script</h3>
+      <p>Current repeater reference plus the full NWS closing script.</p>
+    </a>
+  </div>
+
+  <section class="info">
+    <h2>Current Repeaters</h2>
+    <table class="repeaters">
+      <tr><th>Repeater</th><th>Freq</th><th>PL</th></tr>
+      <tr><td>Primary &mdash; BARC (Towson, MD)</td><td class="freq">146.670</td><td class="freq">107.2</td></tr>
+      <tr><td>Backup &mdash; BRATS <span class="pending">(pending permission)</span></td><td class="freq">147.030</td><td class="freq">156.7</td></tr>
+      <tr><td>Carroll County ARC</td><td class="freq">145.410</td><td class="freq">114.8</td></tr>
+      <tr><td>Carroll (Sykesville)</td><td class="freq">147.285</td><td class="freq">156.7</td></tr>
+      <tr><td>Howard County ARC</td><td class="freq">147.135</td><td class="freq">156.7</td></tr>
+      <tr><td>Howard County ARC (alt)</td><td class="freq">147.390</td><td class="freq">156.7</td></tr>
+    </table>
+  </section>
+
+  <section class="info">
+    <h2>Questions / Reports</h2>
+    <p>Chris Madairy, AK3B &mdash; Regional Skywarn Coordinator<br>
+    <a href="mailto:ak3b@outlook.com" style="color:var(--accent2)">ak3b@outlook.com</a> &middot; 443-834-6823</p>
+  </section>
+
+</main>
+
+<footer>
+  Baltimore Region Skywarn &middot; this page is static and requires no account or login to view.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,998 @@
+<title>Baltimore Skywarn Console</title>
+<meta name="description" content="Live net-control log for Baltimore Region Skywarn activations — quick check-ins, NWS-criteria flagging, and export for the after-action log.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --bg: #EEF1F6;
+    --surface: #FFFFFF;
+    --surface-2: #F4F6FA;
+    --border: #D8DEE9;
+    --text: #10151F;
+    --text-dim: #5B6472;
+    --accent: #E8631C;
+    --accent-contrast: #FFFFFF;
+    --accent-soft: #FCE7DA;
+    --good: #1E8E5A;
+    --good-soft: #DFF3E8;
+    --warn: #B4790A;
+    --warn-soft: #FBEED0;
+    --critical: #C6323A;
+    --critical-soft: #FADCDE;
+    --shadow: 0 1px 2px rgba(16,21,31,0.06), 0 8px 24px rgba(16,21,31,0.06);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0B0F1A;
+      --surface: #131A29;
+      --surface-2: #1B2436;
+      --border: #2A3547;
+      --text: #ECEFF5;
+      --text-dim: #93A0B5;
+      --accent: #F2791F;
+      --accent-contrast: #14100B;
+      --accent-soft: #3A2313;
+      --good: #3FCB82;
+      --good-soft: #123825;
+      --warn: #F2B705;
+      --warn-soft: #3A2E08;
+      --critical: #FF6B6B;
+      --critical-soft: #3B1518;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0B0F1A;
+    --surface: #131A29;
+    --surface-2: #1B2436;
+    --border: #2A3547;
+    --text: #ECEFF5;
+    --text-dim: #93A0B5;
+    --accent: #F2791F;
+    --accent-contrast: #14100B;
+    --accent-soft: #3A2313;
+    --good: #3FCB82;
+    --good-soft: #123825;
+    --warn: #F2B705;
+    --warn-soft: #3A2E08;
+    --critical: #FF6B6B;
+    --critical-soft: #3B1518;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', -apple-system, Segoe UI, Roboto, sans-serif;
+    padding: 20px 16px 40px;
+    max-width: 1180px;
+    margin: 0 auto;
+    line-height: 1.4;
+  }
+  .mono { font-family: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace; }
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+  button { font-family: inherit; cursor: pointer; }
+  input, select, textarea {
+    font-family: inherit;
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13.5px;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  /* ---- Top bar ---- */
+  .topbar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  .topbar-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .eye {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: var(--accent); color: var(--accent-contrast);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 700; flex-shrink: 0;
+  }
+  .brand h1 { font-size: 16px; font-weight: 700; letter-spacing: 0.01em; }
+  .brand .sub { font-size: 11px; color: var(--text-dim); font-weight: 500; }
+  .clock {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px; font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+  }
+  .clock .tz { font-size: 10px; color: var(--text-dim); display: block; text-align: center; font-weight: 500; letter-spacing: 0.04em; }
+
+  .topbar-fields {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+  }
+  .topbar-fields .wide { grid-column: span 2; }
+  @media (max-width: 900px) {
+    .topbar-fields { grid-template-columns: repeat(2, 1fr); }
+    .topbar-fields .wide { grid-column: span 2; }
+  }
+
+  /* ---- Layout ---- */
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 16px;
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 16px 18px;
+  }
+  .panel + .panel { margin-top: 16px; }
+  .panel h2 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+
+  /* ---- Entry form ---- */
+  .entry-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .entry-grid .add-btn { margin-top: 18px; }
+  .entry-grid > div { flex: 0 0 auto; }
+  .entry-grid [hidden] { display: none !important; }
+  #ef-time { width: 160px; }
+  #ef-call { width: 110px; }
+  #ef-county { width: 120px; }
+  #ef-type { width: 165px; }
+  #ef-detail { width: 150px; }
+  #ef-remarks { flex: 1 1 200px; }
+  @media (max-width: 700px) {
+    .entry-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .time-row { display: flex; gap: 4px; }
+  .time-row input { flex: 1 1 auto; min-width: 0; }
+  .now-btn {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+  .add-btn {
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 9px 10px;
+  }
+  .add-btn:hover { filter: brightness(1.05); }
+  .criteria-flag {
+    margin-top: 10px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    background: var(--critical-soft);
+    color: var(--critical);
+    border: 1px solid var(--critical);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .criteria-flag.show { display: flex; }
+  .roster-hint {
+    margin-top: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    min-height: 13px;
+  }
+  .roster-hint.on { color: var(--good); }
+  .roster-hint.off { color: var(--text-dim); font-weight: 500; }
+
+  /* ---- Summary strip ---- */
+  .summary {
+    display: flex;
+    gap: 10px;
+    margin: 14px 0;
+    flex-wrap: wrap;
+  }
+  .stat {
+    flex: 1;
+    min-width: 110px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .stat .n { font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 700; line-height: 1; }
+  .stat .l { font-size: 10.5px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 4px; }
+  .stat.critical .n { color: var(--critical); }
+  .stat.warn .n { color: var(--warn); }
+  .stat.good .n { color: var(--good); }
+
+  /* ---- Log table ---- */
+  .log-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 640px; }
+  thead th {
+    text-align: left;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    background: var(--surface-2);
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0;
+  }
+  tbody td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr.example { opacity: 0.6; }
+  td.time, td.call { font-family: 'IBM Plex Mono', monospace; font-weight: 600; white-space: nowrap; }
+  td.remarks { max-width: 260px; }
+  .chip {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .chip.type-report { background: var(--critical-soft); color: var(--critical); }
+  .chip.type-checkin { background: var(--surface-2); color: var(--text-dim); border: 1px solid var(--border); }
+  .relay-select { font-size: 11.5px; padding: 4px 6px; }
+  .relay-select.pending { background: var(--warn-soft); color: var(--warn); border-color: var(--warn); }
+  .relay-select.yes { background: var(--good-soft); color: var(--good); border-color: var(--good); }
+  .relay-select.na { background: var(--surface-2); color: var(--text-dim); }
+  .del-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-size: 15px;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .del-btn:hover { color: var(--critical); background: var(--critical-soft); }
+  .example-tag {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    margin-left: 6px;
+  }
+  .empty-note {
+    padding: 20px 10px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 12.5px;
+  }
+
+  /* ---- Toolbar ---- */
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .tbtn {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tbtn:hover { border-color: var(--accent); color: var(--accent); }
+  .tbtn.danger:hover { border-color: var(--critical); color: var(--critical); }
+  .toast {
+    position: fixed;
+    bottom: 20px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: var(--bg);
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    z-index: 50;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---- Sidebar ---- */
+  .ref-list { list-style: none; margin: 0; padding: 0; font-size: 12px; }
+  .ref-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .ref-list li:last-child { border-bottom: none; }
+  .ref-list .k { color: var(--text-dim); }
+  .ref-list .v { font-family: 'IBM Plex Mono', monospace; font-weight: 600; text-align: right; }
+  .crit-list { list-style: none; margin: 0; padding: 0; font-size: 11.5px; }
+  .crit-list li {
+    padding: 5px 0 5px 18px;
+    position: relative;
+    border-bottom: 1px dashed var(--border);
+  }
+  .crit-list li:last-child { border-bottom: none; }
+  .crit-list li::before {
+    content: "▲";
+    position: absolute; left: 0; top: 6px;
+    color: var(--critical);
+    font-size: 8px;
+  }
+  .backup-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .backup-row:last-child { border-bottom: none; }
+  .backup-none {
+    color: var(--critical);
+    font-weight: 700;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .backup-names { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 11.5px; }
+  .nws-box {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .nws-box b { color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+
+  @media print {
+    body { max-width: none; padding: 0; background: #fff; color: #000; }
+    .toolbar, .sidebar, .now-btn, .del-btn, .criteria-flag { display: none !important; }
+    .panel, .topbar { box-shadow: none; border: 1px solid #999; }
+    .layout { grid-template-columns: 1fr; }
+    .relay-select { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+
+<div class="topbar">
+  <div class="topbar-head">
+    <div class="brand">
+      <div class="eye">SW</div>
+      <div>
+        <h1>Baltimore Skywarn Console</h1>
+        <div class="sub">Net Control Console</div>
+      </div>
+    </div>
+    <div class="clock" id="clock">--:--:--<span class="tz">LOCAL TIME</span></div>
+  </div>
+  <div class="topbar-fields">
+    <div>
+      <label for="f-event">Event / Activation</label>
+      <input id="f-event" type="text" placeholder="e.g. Severe T-storm watch">
+    </div>
+    <div>
+      <label for="f-date">Date</label>
+      <input id="f-date" type="date">
+    </div>
+    <div>
+      <label for="f-opfrom">Op. Period From</label>
+      <input id="f-opfrom" type="time">
+    </div>
+    <div>
+      <label for="f-opto">Op. Period To</label>
+      <input id="f-opto" type="time">
+    </div>
+    <div>
+      <label for="f-ncs">Net Control</label>
+      <input id="f-ncs" type="text" class="mono" value="AK3B">
+    </div>
+    <div class="wide">
+      <label for="f-repeaters">Repeater(s) in Use</label>
+      <input id="f-repeaters" type="text" class="mono" value="146.670 / 107.2 (BARC, primary) / 147.030 / 156.7 (BRATS, backup — TENTATIVE)">
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="main">
+    <div class="panel">
+      <h2>Log Entry</h2>
+      <form id="entry-form">
+        <div class="entry-grid">
+          <div id="ef-time">
+            <label for="f-time">Time</label>
+            <div class="time-row">
+              <input id="f-time" type="time" required>
+              <button type="button" class="now-btn" id="now-btn">NOW</button>
+            </div>
+          </div>
+          <div id="ef-call">
+            <label for="f-call">Callsign</label>
+            <input id="f-call" type="text" class="mono" placeholder="AK3B" autocomplete="off">
+            <div class="roster-hint" id="roster-hint"></div>
+          </div>
+          <div id="ef-county">
+            <label for="f-county">County</label>
+            <select id="f-county">
+              <option>Baltimore City</option>
+              <option>Baltimore County</option>
+              <option>Howard</option>
+              <option>Carroll</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div id="ef-type">
+            <label for="f-type">Type</label>
+            <select id="f-type">
+              <option value="Check-in">Check-in</option>
+              <option value="Tornado">Tornado</option>
+              <option value="Funnel Cloud">Funnel cloud</option>
+              <option value="Wall Cloud">Wall cloud (rotating)</option>
+              <option value="Hail">Hail</option>
+              <option value="Wind Gust">Wind gust</option>
+              <option value="Downed Trees">Trees / large branches down</option>
+              <option value="Downed Wires/Poles">Wires / utility poles down</option>
+              <option value="Lightning Strike">Lightning strike (damage/fire)</option>
+              <option value="Flooding">Flooding</option>
+              <option value="Flash Flooding">Flash flooding</option>
+              <option value="Rainfall">Rainfall measured</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div id="ef-detail" hidden>
+            <label id="detail-label" for="f-detail">Detail</label>
+            <select id="f-detail"></select>
+          </div>
+          <div id="ef-remarks">
+            <label for="f-remarks">Remarks</label>
+            <input id="f-remarks" type="text" placeholder="Location, detail...">
+          </div>
+          <button type="submit" class="add-btn">+ Add</button>
+        </div>
+        <div class="criteria-flag" id="criteria-flag">⚠ Meets NWS reportable criteria — relay to NWS at 800-253-7091</div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="summary" id="summary"></div>
+      <h2>Communications Log</h2>
+      <div class="log-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:70px">Time</th>
+              <th style="width:80px">Callsign</th>
+              <th style="width:110px">County</th>
+              <th style="width:170px">Type</th>
+              <th>Remarks</th>
+              <th style="width:110px">Relayed to NWS</th>
+              <th style="width:36px"></th>
+            </tr>
+          </thead>
+          <tbody id="log-body"></tbody>
+        </table>
+      </div>
+      <div class="toolbar">
+        <button class="tbtn" id="copy-btn">⧉ Copy log (paste into Excel)</button>
+        <button class="tbtn" id="csv-btn">⬇ Save as CSV</button>
+        <button class="tbtn" id="print-btn">🖨 Print</button>
+        <button class="tbtn danger" id="reset-btn">✕ New net (clear log)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="panel">
+      <h2>Repeaters</h2>
+      <ul class="ref-list">
+        <li><span class="k">Primary — BARC</span><span class="v">146.670 / 107.2</span></li>
+        <li><span class="k">Backup — BRATS (pending)</span><span class="v">147.030 / 156.7</span></li>
+        <li><span class="k">Carroll</span><span class="v">145.410 / 114.8</span></li>
+        <li><span class="k">Carroll (Sykesville)</span><span class="v">147.285 / 156.7</span></li>
+        <li><span class="k">↳ links to Westminster</span><span class="v">449.875 / 127.3</span></li>
+        <li><span class="k">Howard</span><span class="v">147.135 / 156.7</span></li>
+        <li><span class="k">Howard (alt)</span><span class="v">147.390 / 156.7</span></li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2>Backup Net Control</h2>
+      <div class="backup-row">
+        <span>Baltimore</span>
+        <span class="backup-none">None — Chris only</span>
+      </div>
+      <div class="backup-row">
+        <span>Carroll</span>
+        <span class="backup-names">WM3A · NS3X · N3VOP</span>
+      </div>
+      <div class="backup-row">
+        <span>Howard</span>
+        <span class="backup-names">KB3VDY · W3ACW</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>NWS Reportable Criteria</h2>
+      <ul class="crit-list">
+        <li>Tornado, funnel cloud, or rotating wall cloud</li>
+        <li>Hail — compare to coin/ball sizes</li>
+        <li>Wind gust 50 mph+ (measured)</li>
+        <li>Stream/creek/river out of its banks</li>
+        <li>Roads made impassable by water</li>
+        <li>1"+ rain measured with a gauge</li>
+        <li>Lightning-caused damage or fire</li>
+        <li>Downed trees, large branches, wires, or utility poles</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2>NWS Contact</h2>
+      <div class="nws-box">
+        Relay qualifying reports directly:<br>
+        <b>800-253-7091</b><br>
+        After the net, email the completed log to <b>ak3b@outlook.com</b>, subject line <b>"Skywarn Report Log - [Your County]"</b> (e.g. <i>Skywarn Report Log - Baltimore County</i>).
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "skywarn-net-console-v2";
+
+  // Report type -> optional graduated detail picker. Types not listed here (Check-in, Other)
+  // get no detail field. Everything except Check-in/Other counts as NWS-reportable.
+  var TYPE_DETAILS = {
+    "Hail": {
+      label: "Size (vs. coin/ball)",
+      options: [
+        "Pea (1/4\")", "Mothball (1/3\")", "Penny (3/4\")", "Nickel (7/8\")",
+        "Quarter (1\")", "Half Dollar (1 1/4\")", "Ping Pong Ball (1 1/2\")",
+        "Golf Ball (1 3/4\")", "Hen Egg (2\")", "Tennis Ball (2 1/2\")",
+        "Baseball (2 3/4\")", "Softball (4\"+)"
+      ]
+    },
+    "Wind Gust": {
+      label: "Estimated speed",
+      options: ["50-57 mph", "58-73 mph (severe threshold)", "74-99 mph", "100+ mph", "Measured (see remarks)"]
+    },
+    "Flooding": {
+      label: "Depth",
+      options: ["Minor — standing water under 6\"", "Major — 6\" or more / roads impassable"]
+    }
+  };
+  var REPORT_TYPES = ["Tornado","Funnel Cloud","Wall Cloud","Hail","Wind Gust","Downed Trees","Downed Wires/Poles","Lightning Strike","Flooding","Flash Flooding","Rainfall"];
+
+  // Baltimore Region Skywarn roster — from Skywarn Roster.xlsx.
+  // Update this list when the roster changes; there's no live external lookup (see chat).
+  var ROSTER = {
+    "AK3B":   { name: "Chris Madairy",     county: "Baltimore County", ncs: true,  note: "Subnet Manager — all counties" },
+    "KB3JQQ": { name: "Scott Siegel",      county: "Baltimore County", ncs: false },
+    "KB3VRM": { name: "Brian Amos",        county: "Baltimore County", ncs: false },
+    "KB3HCG": { name: "Michael O'Connor",  county: "Baltimore County", ncs: false },
+    "WM3A":   { name: "Dale Klonin",       county: "Carroll",          ncs: true,  note: "Primary Carroll NCS" },
+    "N3LSB":  { name: "Dave Drake",        county: "Carroll",          ncs: false },
+    "N3FZ":   { name: "Bryan Chant",       county: "Carroll",          ncs: false, note: "In NCS training" },
+    "NS3X":   { name: "Mark Nalepa",       county: "Carroll",          ncs: true },
+    "AB3WR":  { name: "Rich Krell",        county: "Carroll",          ncs: false },
+    "WX3F":   { name: "Larry Solarczyk",   county: "Carroll",          ncs: false, note: "Carroll Co. RACES/ARES" },
+    "N3VOP":  { name: "Michael D Fisher",  county: "Carroll",          ncs: true },
+    "N3AWP":  { name: "Andy Protigal",     county: "Howard",           ncs: false, note: "Howard Co. ARES EC" },
+    "KB3VDY": { name: "David Parkison",    county: "Howard",           ncs: true },
+    "W3ACW":  { name: "Adam Walworth",     county: "Howard",           ncs: true }
+  };
+
+  var els = {
+    event: document.getElementById("f-event"),
+    date: document.getElementById("f-date"),
+    opfrom: document.getElementById("f-opfrom"),
+    opto: document.getElementById("f-opto"),
+    ncs: document.getElementById("f-ncs"),
+    repeaters: document.getElementById("f-repeaters"),
+    time: document.getElementById("f-time"),
+    call: document.getElementById("f-call"),
+    county: document.getElementById("f-county"),
+    type: document.getElementById("f-type"),
+    detailWrap: document.getElementById("ef-detail"),
+    detailLabel: document.getElementById("detail-label"),
+    detail: document.getElementById("f-detail"),
+    remarks: document.getElementById("f-remarks"),
+    form: document.getElementById("entry-form"),
+    nowBtn: document.getElementById("now-btn"),
+    rosterHint: document.getElementById("roster-hint"),
+    criteriaFlag: document.getElementById("criteria-flag"),
+    logBody: document.getElementById("log-body"),
+    summary: document.getElementById("summary"),
+    clock: document.getElementById("clock"),
+    copyBtn: document.getElementById("copy-btn"),
+    csvBtn: document.getElementById("csv-btn"),
+    printBtn: document.getElementById("print-btn"),
+    resetBtn: document.getElementById("reset-btn"),
+    toast: document.getElementById("toast")
+  };
+
+  var exampleEntries = [
+    { time: "19:02", call: "AK3B", county: "Baltimore County", type: "Check-in", remarks: "Net control online, monitoring BARC 146.670", relayed: "na", example: true },
+    { time: "19:14", call: "N3FZ", county: "Carroll", type: "Hail", remarks: "Dime-size hail, Westminster area, 2 min duration", relayed: "pending", example: true }
+  ];
+
+  var state = { header: {}, entries: [] };
+
+  function pad(n) { return String(n).padStart(2, "0"); }
+  function nowTimeStr() {
+    var d = new Date();
+    return pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.entries)) return parsed;
+      }
+    } catch (e) {}
+    return null;
+  }
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  function initHeader() {
+    var saved = loadState();
+    if (saved && saved.header) {
+      els.event.value = saved.header.event || "";
+      els.date.value = saved.header.date || todayStr();
+      els.opfrom.value = saved.header.opfrom || "";
+      els.opto.value = saved.header.opto || "";
+      els.ncs.value = saved.header.ncs || "AK3B";
+      els.repeaters.value = saved.header.repeaters || els.repeaters.value;
+    } else {
+      els.date.value = todayStr();
+    }
+    if (saved && saved.entries && saved.entries.length) {
+      state.entries = saved.entries;
+    } else {
+      state.entries = exampleEntries.slice();
+    }
+    [els.event, els.date, els.opfrom, els.opto, els.ncs, els.repeaters].forEach(function (el) {
+      el.addEventListener("change", persistHeader);
+    });
+  }
+
+  function persistHeader() {
+    state.header = {
+      event: els.event.value, date: els.date.value, opfrom: els.opfrom.value,
+      opto: els.opto.value, ncs: els.ncs.value, repeaters: els.repeaters.value
+    };
+    saveState();
+  }
+
+  function relayClass(v) {
+    if (v === "yes") return "yes";
+    if (v === "na") return "na";
+    return "pending";
+  }
+
+  function render() {
+    els.logBody.innerHTML = "";
+    if (!state.entries.length) {
+      var tr = document.createElement("tr");
+      tr.innerHTML = '<td colspan="7" class="empty-note">No entries yet — log your first check-in above.</td>';
+      els.logBody.appendChild(tr);
+    } else {
+      state.entries.forEach(function (entry, idx) {
+        var tr = document.createElement("tr");
+        if (entry.example) tr.className = "example";
+        var isReport = REPORT_TYPES.indexOf(entry.type) !== -1;
+        tr.innerHTML =
+          '<td class="time">' + escapeHtml(entry.time) + '</td>' +
+          '<td class="call">' + escapeHtml(entry.call || "—") + '</td>' +
+          '<td>' + escapeHtml(entry.county) + '</td>' +
+          '<td><span class="chip ' + (isReport ? "type-report" : "type-checkin") + '">' + escapeHtml(entry.type) + '</span>' + (entry.example ? '<span class="example-tag">example</span>' : '') + '</td>' +
+          '<td class="remarks">' + escapeHtml(entry.remarks || "") + '</td>' +
+          '<td></td>' +
+          '<td></td>';
+        var relayTd = tr.children[5];
+        var sel = document.createElement("select");
+        sel.className = "relay-select " + relayClass(entry.relayed);
+        sel.innerHTML = '<option value="pending">Pending</option><option value="yes">Yes</option><option value="na">N/A</option>';
+        sel.value = entry.relayed || "pending";
+        sel.addEventListener("change", function () {
+          entry.relayed = sel.value;
+          sel.className = "relay-select " + relayClass(sel.value);
+          saveState();
+          renderSummary();
+        });
+        relayTd.appendChild(sel);
+        var delTd = tr.children[6];
+        var delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "del-btn";
+        delBtn.title = "Delete entry";
+        delBtn.textContent = "✕";
+        delBtn.addEventListener("click", function () {
+          state.entries.splice(idx, 1);
+          saveState();
+          render();
+        });
+        delTd.appendChild(delBtn);
+        els.logBody.appendChild(tr);
+      });
+    }
+    renderSummary();
+  }
+
+  function renderSummary() {
+    var total = state.entries.length;
+    var reports = state.entries.filter(function (e) { return REPORT_TYPES.indexOf(e.type) !== -1; }).length;
+    var pending = state.entries.filter(function (e) { return REPORT_TYPES.indexOf(e.type) !== -1 && e.relayed !== "yes" && e.relayed !== "na"; }).length;
+    var relayed = state.entries.filter(function (e) { return e.relayed === "yes"; }).length;
+    els.summary.innerHTML =
+      '<div class="stat"><div class="n mono">' + total + '</div><div class="l">Total entries</div></div>' +
+      '<div class="stat critical"><div class="n mono">' + reports + '</div><div class="l">Meet NWS criteria</div></div>' +
+      '<div class="stat warn"><div class="n mono">' + pending + '</div><div class="l">Pending relay</div></div>' +
+      '<div class="stat good"><div class="n mono">' + relayed + '</div><div class="l">Relayed</div></div>';
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function showToast(msg) {
+    els.toast.textContent = msg;
+    els.toast.classList.add("show");
+    setTimeout(function () { els.toast.classList.remove("show"); }, 2200);
+  }
+
+  function updateCriteriaFlag() {
+    var isReport = REPORT_TYPES.indexOf(els.type.value) !== -1;
+    els.criteriaFlag.classList.toggle("show", isReport);
+  }
+
+  function updateDetailField() {
+    var cfg = TYPE_DETAILS[els.type.value];
+    if (cfg) {
+      els.detailLabel.textContent = cfg.label;
+      els.detail.innerHTML = '<option value="">—</option>' + cfg.options.map(function (o) {
+        return '<option value="' + o.replace(/"/g, "&quot;") + '">' + o + '</option>';
+      }).join("");
+      els.detailWrap.hidden = false;
+    } else {
+      els.detailWrap.hidden = true;
+      els.detail.innerHTML = "";
+    }
+  }
+
+  els.type.addEventListener("change", function () {
+    updateCriteriaFlag();
+    updateDetailField();
+  });
+
+  els.nowBtn.addEventListener("click", function () {
+    els.time.value = nowTimeStr();
+  });
+
+  var countyOptions = Array.prototype.map.call(els.county.options, function (o) { return o.value; });
+
+  function lookupRoster() {
+    var call = els.call.value.trim().toUpperCase();
+    if (!call) { els.rosterHint.textContent = ""; els.rosterHint.className = "roster-hint"; return; }
+    var hit = ROSTER[call];
+    if (hit) {
+      els.rosterHint.textContent = "✓ " + hit.name + (hit.ncs ? " — Net Control" : "") + (hit.note ? " (" + hit.note + ")" : "");
+      els.rosterHint.className = "roster-hint on";
+      if (countyOptions.indexOf(hit.county) !== -1) els.county.value = hit.county;
+    } else {
+      els.rosterHint.textContent = "Not on roster — spotter/visitor";
+      els.rosterHint.className = "roster-hint off";
+    }
+  }
+  els.call.addEventListener("input", lookupRoster);
+  els.call.addEventListener("blur", lookupRoster);
+
+  els.form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    // first real entry clears the example rows
+    if (state.entries.length && state.entries.every(function (en) { return en.example; })) {
+      state.entries = [];
+    }
+    var detailVal = els.detailWrap.hidden ? "" : els.detail.value;
+    var remarksVal = els.remarks.value.trim();
+    var combinedRemarks = detailVal ? (detailVal + (remarksVal ? " — " + remarksVal : "")) : remarksVal;
+    var entry = {
+      time: els.time.value || nowTimeStr(),
+      call: els.call.value.trim().toUpperCase(),
+      county: els.county.value,
+      type: els.type.value,
+      remarks: combinedRemarks,
+      relayed: REPORT_TYPES.indexOf(els.type.value) !== -1 ? "pending" : "na"
+    };
+    state.entries.push(entry);
+    saveState();
+    render();
+    els.call.value = "";
+    els.remarks.value = "";
+    els.detail.value = "";
+    els.time.value = nowTimeStr();
+    els.rosterHint.textContent = "";
+    els.rosterHint.className = "roster-hint";
+    els.call.focus();
+  });
+
+  els.resetBtn.addEventListener("click", function () {
+    if (state.entries.length && !confirm("Clear the current log and start a new net? This can't be undone.")) return;
+    state.entries = [];
+    saveState();
+    render();
+    showToast("Log cleared — ready for new net");
+  });
+
+  function buildRows() {
+    var rows = [["Time (Local)", "Callsign", "Location (County/Grid)", "Type", "Report / Remarks", "Relayed to NWS?"]];
+    state.entries.forEach(function (e) {
+      if (e.example) return;
+      var relayLabel = e.relayed === "yes" ? "Yes" : e.relayed === "na" ? "N/A" : "Pending";
+      rows.push([e.time, e.call, e.county, e.type, e.remarks, relayLabel]);
+    });
+    return rows;
+  }
+
+  function toTSV(rows) {
+    return rows.map(function (r) { return r.join("\t"); }).join("\n");
+  }
+  function toCSV(rows) {
+    return rows.map(function (r) {
+      return r.map(function (c) {
+        c = String(c == null ? "" : c);
+        return /[",\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c;
+      }).join(",");
+    }).join("\r\n");
+  }
+
+  function headerBlock() {
+    return [
+      "ICS 309 — COMMUNICATIONS LOG",
+      "Baltimore Region SKYWARN Net — Check-In & Report Log",
+      "Incident/Event: " + (els.event.value || "—"),
+      "NWS Office: LWX (Baltimore/Washington)",
+      "Date: " + (els.date.value || "—"),
+      "Operational Period: " + (els.opfrom.value || "—") + " to " + (els.opto.value || "—"),
+      "Net Control: " + (els.ncs.value || "—"),
+      "Repeater(s): " + (els.repeaters.value || "—"),
+      ""
+    ].join("\n");
+  }
+
+  els.copyBtn.addEventListener("click", function () {
+    var text = toTSV(buildRows());
+    if (!state.entries.some(function (e) { return !e.example; })) {
+      showToast("Nothing to copy yet");
+      return;
+    }
+    navigator.clipboard.writeText(text).then(function () {
+      showToast("Log copied — paste into Excel");
+    }).catch(function () {
+      showToast("Copy failed — try again");
+    });
+  });
+
+  els.csvBtn.addEventListener("click", function () {
+    if (!state.entries.some(function (e) { return !e.example; })) {
+      showToast("Nothing to save yet");
+      return;
+    }
+    var csv = headerBlock().split("\n").map(function (l) { return l ? '"' + l.replace(/"/g, '""') + '"' : ""; }).join("\r\n")
+      + "\r\n" + toCSV(buildRows());
+    var filename = "Skywarn-Net-Log-" + (els.date.value || todayStr()) + ".csv";
+    claude.use("downloads").then(function (downloads) {
+      if (!downloads) { showToast("Downloads unavailable here"); return; }
+      downloads.save({ filename: filename, data: csv }).then(function () {
+        showToast("Saved " + filename);
+      }).catch(function (err) {
+        if (err && err.code === "declined") return;
+        showToast("Save failed — try again");
+      });
+    });
+  });
+
+  els.printBtn.addEventListener("click", function () { window.print(); });
+
+  function tickClock() {
+    var d = new Date();
+    els.clock.innerHTML = pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds()) + '<span class="tz">LOCAL TIME</span>';
+  }
+
+  function start() {
+    initHeader();
+    els.time.value = nowTimeStr();
+    updateCriteriaFlag();
+    updateDetailField();
+    render();
+    tickClock();
+    setInterval(tickClock, 1000);
+  }
+
+  if (window.claude && window.claude.hot && window.claude.hot.ready) {
+    window.claude.hot.ready(start);
+  } else {
+    start();
+  }
+})();
+</script>
