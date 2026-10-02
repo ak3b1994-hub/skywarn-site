@@ -109,6 +109,27 @@
   table.repeaters a:hover { text-decoration: underline; }
   table.repeaters td.role { font-weight: 700; white-space: nowrap; }
   table.repeaters td.freq { white-space: nowrap; }
+  .recruit {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;
+    background: linear-gradient(135deg, rgba(232,99,28,.18), rgba(232,99,28,.05));
+    border: 1px solid var(--accent); border-left: 6px solid var(--accent);
+    border-radius: 10px; padding: 18px 22px; margin-bottom: 24px;
+  }
+  .recruit h2 { margin: 0 0 4px; font-size: 1.25rem; }
+  .recruit p { margin: 0; color: var(--muted); font-size: 0.92rem; max-width: 560px; }
+  .recruit .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 10px 18px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 0.95rem; }
+  .btn.primary { background: var(--accent); color: #fff; }
+  .btn.primary:hover { background: #c9520f; }
+  .btn.ghost { border: 1px solid var(--border); color: var(--text); }
+  .btn.ghost:hover { border-color: var(--accent2); }
+  .links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 6px 28px; }
+  .links-grid h3 { margin: 6px 0 6px; font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .links-grid ul { list-style: none; margin: 0 0 10px; padding: 0; }
+  .links-grid li { padding: 4px 0; font-size: 0.92rem; }
+  .links-grid a { color: var(--accent2); text-decoration: none; }
+  .links-grid a:hover { text-decoration: underline; }
+  .links-grid .note { color: var(--muted); font-size: 0.8rem; }
   .pending { color: #f0a94e; font-size: 0.8rem; }
   footer {
     text-align: center;
@@ -136,6 +157,17 @@
 <main>
 
   <p class="lead">Tools, reference docs, and net scripts for Skywarn net control operators and spotters across the Baltimore region. Bookmark this page — it's the one-stop link for everything you need during an activation.</p>
+
+  <div class="recruit">
+    <div>
+      <h2>Spotters &amp; Net Control Operators Needed</h2>
+      <p>We're building coverage across Baltimore City, Baltimore County, Carroll County, and Howard County. No experience required &mdash; we'll point you to free NWS training and get you on a net.</p>
+    </div>
+    <div class="actions">
+      <a class="btn primary" href="https://docs.google.com/forms/d/e/1FAIpQLSdJQfHZRx6Y1SUoAmWzIhFh-ZIojmRXTw6Uzq0TO735MCUW3Q/viewform" target="_blank" rel="noopener">Apply to Volunteer &rarr;</a>
+      <a class="btn ghost" href="interested.html">Learn More</a>
+    </div>
+  </div>
 
   <div class="grid">
     <a class="card" href="console.html">
@@ -186,9 +218,37 @@
   </section>
 
   <section class="info">
-    <h2>Related Links</h2>
-    <p><a href="https://www.weather.gov/lwx/skywarn" target="_blank" rel="noopener" style="color:var(--accent2)">NWS Baltimore/Washington Skywarn</a> &mdash; training schedule and reporting info<br>
-    <a href="https://www.wx4lwx.org/" target="_blank" rel="noopener" style="color:var(--accent2)">National Capital Area Skywarn Support Group</a></p>
+    <h2>Weather Links</h2>
+    <div class="links-grid">
+      <div>
+        <h3>NWS Baltimore/Washington</h3>
+        <ul>
+          <li><a href="https://www.weather.gov/lwx/" target="_blank" rel="noopener">NWS Sterling (LWX) Home</a></li>
+          <li><a href="https://radar.weather.gov/station/KLWX/standard" target="_blank" rel="noopener">KLWX Radar</a></li>
+          <li><a href="https://forecast.weather.gov/product.php?site=NWS&amp;issuedby=LWX&amp;product=HWO" target="_blank" rel="noopener">Hazardous Weather Outlook</a></li>
+          <li><a href="https://forecast.weather.gov/product.php?site=LWX&amp;issuedby=LWX&amp;product=AFD" target="_blank" rel="noopener">Area Forecast Discussion</a></li>
+          <li><a href="https://forecast.weather.gov/product.php?site=NWS&amp;issuedby=LWX&amp;product=LSR" target="_blank" rel="noopener">Local Storm Reports</a></li>
+          <li><a href="https://www.weather.gov/lwx/skywarn" target="_blank" rel="noopener">LWX Skywarn &amp; Training</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>National Centers</h3>
+        <ul>
+          <li><a href="https://www.spc.noaa.gov/" target="_blank" rel="noopener">Storm Prediction Center</a> <span class="note">outlooks &amp; watches</span></li>
+          <li><a href="https://www.nhc.noaa.gov/" target="_blank" rel="noopener">National Hurricane Center</a></li>
+          <li><a href="https://www.wpc.ncep.noaa.gov/" target="_blank" rel="noopener">Weather Prediction Center</a> <span class="note">heavy rain &amp; winter</span></li>
+          <li><a href="https://mping.ou.edu/" target="_blank" rel="noopener">mPING Reports</a> <span class="note">report precip type from your phone</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Amateur Radio Nets &amp; Groups</h3>
+        <ul>
+          <li><a href="https://www.hwn.org/" target="_blank" rel="noopener">Hurricane Watch Net</a> <span class="note">14.325 MHz day &middot; 7.268 MHz night</span></li>
+          <li><a href="https://www.wx4nhc.org/" target="_blank" rel="noopener">WX4NHC &mdash; NHC Amateur Radio Station</a></li>
+          <li><a href="https://www.wx4lwx.org/" target="_blank" rel="noopener">National Capital Area Skywarn Support Group</a></li>
+        </ul>
+      </div>
+    </div>
   </section>
 
   <section class="info">
