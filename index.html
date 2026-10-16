@@ -407,20 +407,25 @@
     alerts.forEach(function (a) { track.appendChild(buildItem(a)); });
     box.hidden = false;
 
-    // Scroll only when the alerts don't fit across the screen.
+    // Always scroll: enter from the right edge, exit off the left, repeat.
+    // Hovering the strip pauses it so an alert can be clicked.
     var viewport = track.parentNode;
-    var w = track.scrollWidth;
-    if (w > viewport.clientWidth) {
-      alerts.forEach(function (a) {
-        var copy = buildItem(a);
-        copy.setAttribute('aria-hidden', 'true');
-        copy.tabIndex = -1;
-        track.appendChild(copy);
-      });
-      box.style.setProperty('--wx-dur', Math.max(20, Math.round(w / 70)) + 's');
-      box.classList.add('scroll');
-    }
+    var vw = viewport.clientWidth;
+    var tw = track.scrollWidth;
+    var SPEED = 80; // pixels per second
+    box.style.setProperty('--wx-from', vw + 'px');
+    box.style.setProperty('--wx-to', -tw + 'px');
+    box.style.setProperty('--wx-dur', Math.max(10, Math.round((vw + tw) / SPEED)) + 's');
+    box.classList.add('scroll');
   }
+
+  // Re-measure if the window is resized so the scroll distance stays right.
+  var lastAlerts = [];
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { if (lastAlerts.length) render(lastAlerts); }, 250);
+  });
 
   function load() {
     fetch(FEED, { cache: 'no-store' })
@@ -445,6 +450,9 @@
                       headline: p.headline, cls: sevClass(p.event) });
         });
         list.sort(function (a, b) { return RANK[a.cls] - RANK[b.cls]; });
+        // Only redraw when something changed, so the scroll doesn't restart every refresh.
+        if (JSON.stringify(list) === JSON.stringify(lastAlerts)) return;
+        lastAlerts = list;
         render(list);
       })
       .catch(function () { /* feed unreachable: keep whatever is showing */ });
