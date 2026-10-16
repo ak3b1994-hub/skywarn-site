@@ -185,7 +185,7 @@
   .wx-sev.watch    { background: #ff9f0a; }
   .wx-sev.advisory { background: #ffd60a; }
   .wx-sev.other    { background: #8e9aa6; }
-  @keyframes wxscroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes wxscroll { from { transform: translateX(var(--wx-from, 100vw)); } to { transform: translateX(var(--wx-to, -100%)); } }
   @keyframes wxpulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
   @media (prefers-reduced-motion: reduce) {
     .wx-ticker.scroll .wx-track { animation: none; white-space: normal; flex-wrap: wrap; }
